@@ -1,13 +1,23 @@
-// 3-step quote funnel — progressive disclosure + FormSubmit handoff
+// 3-step lead-magnet funnel — progressive disclosure + FormSubmit handoff + PDF auto-download
 (function(){
   const shell = document.querySelector('.funnel-shell');
   if (!shell) return;
+  const PDF_URL = 'assets/downloads/checklist.pdf';
   const steps = shell.querySelectorAll('.funnel-step');
   const dots = shell.querySelectorAll('.funnel-progress .fp-step');
   const stepCount = shell.querySelector('.step-count');
   const backBtn = shell.querySelector('.btn--back');
   const form = shell.querySelector('form');
   let current = 0;
+
+  function triggerDownload(){
+    const a = document.createElement('a');
+    a.href = PDF_URL;
+    a.download = 'checklist-importation-cameroun.pdf';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
 
   function show(idx){
     steps.forEach((s, i) => s.classList.toggle('active', i === idx));
@@ -56,13 +66,14 @@
       // honeypot present? bot
       const honey = form.querySelector('input[name="_honey"]');
       if (honey && honey.value) { e.preventDefault(); return; }
-      // Let FormSubmit handle the POST; intercept to show success state if XHR
+      // Lead magnet: capture lead via FormSubmit AJAX, then auto-download the PDF
       if (form.dataset.ajax === 'true') {
         e.preventDefault();
         const data = new FormData(form);
+        const finish = () => { shell.classList.add('submitted'); triggerDownload(); };
         fetch(form.action, { method: 'POST', body: data, headers: { 'Accept': 'application/json' } })
-          .then(r => { shell.classList.add('submitted'); })
-          .catch(() => { shell.classList.add('submitted'); });
+          .then(finish)
+          .catch(finish);
       }
     });
   }

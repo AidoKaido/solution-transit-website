@@ -960,7 +960,6 @@ ul.check li::before {
 
 /* ---------- Sticky WhatsApp ---------- */
 .sticky-whatsapp {
-  display: none !important;       /* temporarily deactivated */
   position: fixed;
   bottom: 24px; right: 24px;
   z-index: 100;
